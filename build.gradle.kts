@@ -1,0 +1,106 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
+plugins {
+    id("java")
+    id("io.qameta.allure") version "3.0.0"
+    id("io.freefair.lombok") version "8.11"
+}
+
+group = "life.ffin"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.10.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+
+    testImplementation("io.rest-assured:rest-assured:5.4.0")
+    testImplementation("io.rest-assured:json-path:5.4.0")
+    testImplementation("io.rest-assured:json-schema-validator:5.4.0")
+
+    testImplementation("io.qameta.allure:allure-rest-assured:2.29.1")
+
+    testImplementation("com.microsoft.playwright:playwright:1.50.0")
+
+    testImplementation("org.aeonbits.owner:owner:1.0.12")
+
+    testImplementation("com.deque.html.axe-core:playwright:4.10.2")
+}
+
+allure {
+    version.set("2.34.1")
+    adapter {
+        frameworks { junit5 {} }
+        autoconfigure.set(true)
+        autoconfigureListeners.set(true)
+        aspectjWeaver.set(true)
+        allureJavaVersion.set("2.29.1")
+        aspectjVersion.set("1.9.22.1")
+    }
+}
+
+
+
+tasks.test {
+    useJUnitPlatform()
+
+    ignoreFailures = true
+
+    finalizedBy("allureReport")
+}
+
+tasks.register("serveAfterTest") {
+    dependsOn("test")
+    finalizedBy("allureServe")
+}
+
+// Открыть Inspector и генерить Java-код (сохранит файл куда укажешь, по дефолту в src/test/java/life/ffin/test/generated)
+tasks.register<JavaExec>("pwCodegen") {
+    group = "playwright"
+    description = "Playwright Inspector codegen (Java)"
+    mainClass.set("com.microsoft.playwright.CLI")
+    classpath = sourceSets.test.get().runtimeClasspath
+
+    val url  = project.findProperty("url")  ?: "https://ffin.life"
+    val out  = project.findProperty("out")  ?: "src/test/java/life/ffin/test/generated/GeneratedTest.java"
+
+    args("codegen", url, "--target=java", "--test-id-attribute=data-testid", "--output=$out")
+}
+
+// Установить браузеры
+tasks.register<JavaExec>("pwInstall") {
+    group = "playwright"
+    description = "Install Playwright browsers (Java CLI)"
+    mainClass.set("com.microsoft.playwright.CLI")
+    classpath = sourceSets.test.get().runtimeClasspath
+
+    args("install")
+}
+
+// Сохранить storage state после логина
+tasks.register<JavaExec>("pwSaveStorage") {
+    group = "playwright"
+    description = "Open Inspector and save storage state"
+    mainClass.set("com.microsoft.playwright.CLI")
+    classpath = sourceSets.test.get().runtimeClasspath
+    val url = project.findProperty("url") ?: "https://example.com/login"
+    val out = project.findProperty("out") ?: "state.json"
+    args("codegen", url, "--save-storage=$out")
+}
+
+// Дебаг существующих тестов с Inspector
+tasks.register<Test>("uiDebug") {
+    group = "verification"
+    description = "Run JUnit tests with Playwright Inspector"
+    useJUnitPlatform()
+    environment("PWDEBUG", "1")
+    systemProperty("headless", "false")
+    testLogging {
+        events("FAILED", "SKIPPED", "PASSED")
+        showStandardStreams = true
+        exceptionFormat = TestExceptionFormat.FULL
+    }
+}
