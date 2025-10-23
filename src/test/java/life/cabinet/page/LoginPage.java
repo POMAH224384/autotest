@@ -13,15 +13,29 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 public class LoginPage extends BasePage<LoginPage> {
 
-    private final Locator usernameInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("ИИН ИИН"));
-    private final Locator passwordInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Пароль Пароль"));
-    private final Locator introducedButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Ознакомлен"));
-    private final Locator submitButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Войти"));
-    private final Locator homeHeaderImg = page.locator("header")
-            .filter(new Locator.FilterOptions().setHasText("Заявить о страховом случае")).getByRole(AriaRole.IMG).first();
-    private final Locator modalWindow = page.locator(".confirmation-dialog__body");
-    private final Locator errorContainer = page.locator(".v-card");
-    private final Locator errorText = page.getByRole(AriaRole.DIALOG);
+
+
+    private Locator usernameInput;
+    private Locator passwordInput;
+    private Locator introducedButton;
+    private Locator submitButton;
+    private Locator homeHeaderImg;
+    private Locator modalWindow;
+    private Locator errorContainer;
+    private Locator errorText;
+
+    @Override
+    public void initComponents() {
+        usernameInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("ИИН ИИН"));
+        passwordInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Пароль Пароль"));
+        introducedButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Ознакомлен"));
+        submitButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Войти"));
+        homeHeaderImg = page.locator("header")
+                .filter(new Locator.FilterOptions().setHasText("Заявить о страховом случае")).getByRole(AriaRole.IMG).first();
+        modalWindow = page.locator(".confirmation-dialog__body");
+        errorContainer = page.locator(".v-card");
+        errorText = page.getByRole(AriaRole.DIALOG);
+    }
 
     @Step("Ввести ИИН: {0}")
     @Nonnull
@@ -48,6 +62,8 @@ public class LoginPage extends BasePage<LoginPage> {
     @Nonnull
     public <T extends BasePage<?>> T submit(T expectedPage) {
         submitButton.click();
+        expectedPage.setAndConfigurePage(page);
+        expectedPage.initComponents();
         return expectedPage;
     }
 

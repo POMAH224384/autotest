@@ -14,7 +14,7 @@ public class LoginTest {
 
     @Test
     void homePageShouldBeDisplayedAfterSuccessLogin() {
-        Pages.open("https://dev-cabinet.k8s.ff.in/auth", LoginPage.class)
+        Pages.open(testConfig().devCabinetUrl(), LoginPage.class)
                 .checkThatPageLoaded()
                 .introduce()
                 .setUsername(testConfig().username())

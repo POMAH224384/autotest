@@ -8,9 +8,15 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 public class HomePage extends BasePage<HomePage> {
 
-    private final Locator homeHeaderImg = page.locator("header")
-            .filter(new Locator.FilterOptions().setHasText("Заявить о страховом случае")).getByRole(AriaRole.IMG).first();
+    private Locator homeHeaderImg;
 
+
+    @Override
+    public void initComponents() {
+        homeHeaderImg = page.locator("header")
+                .filter(new Locator.FilterOptions().setHasText("Заявить о страховом случае")).getByRole(AriaRole.IMG).first();
+
+    }
 
     @Override
     public HomePage checkThatPageLoaded() {
