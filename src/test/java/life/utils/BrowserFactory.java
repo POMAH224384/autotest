@@ -4,6 +4,8 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Playwright;
 
+import java.util.Arrays;
+
 import static life.utils.config.ProdConfig.prodConfig;
 
 public enum BrowserFactory {
@@ -31,9 +33,21 @@ public enum BrowserFactory {
 
     public BrowserType.LaunchOptions options() {
         return new BrowserType.LaunchOptions()
-                .setHeadless(prodConfig().headless())
+                .setHeadless(resolveHeadless())
                 .setSlowMo(prodConfig().slowMotion());
     }
 
     public abstract Browser createInstance(Playwright playwright);
+
+    public static BrowserFactory from(String browserName) {
+        return Arrays.stream(values())
+                .filter(type -> type.name().equalsIgnoreCase(browserName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown browser type: " + browserName));
+    }
+
+    private static boolean resolveHeadless() {
+        String overridden = System.getProperty("headless");
+        return overridden == null ? prodConfig().headless() : Boolean.parseBoolean(overridden);
+    }
 }

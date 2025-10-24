@@ -22,44 +22,68 @@ public class BrowserExtension implements BeforeEachCallback,
     private Playwright playwright;
     private Browser browser;
 
-    private final ThreadLocal<BrowserContext> contextThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<Boolean> needVideoThreadLocal = ThreadLocal.withInitial(() -> false);
 
     @Override
-    public void afterAll(ExtensionContext extensionContext) throws Exception {
-        browser.close();
-        playwright.close();
-
+    public void afterAll(ExtensionContext extensionContext) {
+        if (browser != null) {
+            browser.close();
+            browser = null;
+        }
+        if (playwright != null) {
+            playwright.close();
+            playwright = null;
+        }
     }
 
     @Override
-    public void beforeAll(ExtensionContext extensionContext) throws Exception {
+    public void beforeAll(ExtensionContext extensionContext) {
         playwright = Playwright.create();
         browser = BrowserManager.getBrowser(playwright);
     }
 
     @Override
     public void afterEach(ExtensionContext extensionContext) throws Exception {
-        BrowserContext browserContext = contextThreadLocal.get();
-        var page = UiSession.page();
+
+        BrowserContext browserContext = UiSession.context();
+        if (browserContext == null) return;
+
+        Page page = UiSession.page();
         boolean failed = extensionContext.getExecutionException().isPresent();
 
-        if (page != null) {
-            attachPng(page.screenshot(new Page.ScreenshotOptions().setFullPage(true)));
+        Path trace = null;
+        Path videoPath = null;
+
+        try {
+            // Скриншот только если тест падает
+            if (failed && page != null) {
+                attachPng(page.screenshot(new Page.ScreenshotOptions().setFullPage(true)));
+            }
+
+//            trace = Paths.get("build", "trace-" + sanitize(extensionContext.getDisplayName()) + ".zip");
+//            Files.createDirectories(trace.getParent());
+//            browserContext.tracing().stop(new Tracing.StopOptions().setPath(trace));
+//            attachFile("Trace", Files.readAllBytes(trace), "application/zip", "zip");
+
+            if (page != null) {
+                try {
+                    videoPath = page.video().path();
+                } catch (Exception ignored) { }
+            }
+
+            browserContext.close();
+        } finally {
+            browserContext.close();
+
+            // Приложить видео если тест упал (или был флаг из handlerа)
+            boolean shouldAttachVideo = prodConfig().video() && (failed || needVideoThreadLocal.get());
+            if (shouldAttachVideo && videoPath != null && Files.exists(videoPath)) {
+                attachVideo(Files.readAllBytes(videoPath));
+            }
+
+            UiSession.clear();
+            needVideoThreadLocal.remove();
         }
-
-        Path trace = Paths.get("build", "trace-" + sanitize(extensionContext.getDisplayName()) + ".zip");
-        browserContext.tracing().stop(new Tracing.StopOptions().setPath(trace));
-        attachFile("Trace", Files.readAllBytes(trace), "application/zip", "zip");
-
-        if (prodConfig().video() && (failed || needVideoThreadLocal.get() && page != null && page.video() != null)) {
-            attachVideo(Files.readAllBytes(page.video().path()));
-        }
-
-        browserContext.close();
-        UiSession.clear();
-        contextThreadLocal.remove();
-        needVideoThreadLocal.remove();
 
     }
 
@@ -72,6 +96,7 @@ public class BrowserExtension implements BeforeEachCallback,
                 Files.createDirectories(dir);
             } catch (Exception ignored) { }
             options.setRecordVideoDir(dir);
+            options.setRecordVideoSize(1280, 720);
         }
         BrowserContext browserContext = browser.newContext(options);
 
@@ -82,11 +107,9 @@ public class BrowserExtension implements BeforeEachCallback,
                         .setSources(true)
         );
 
-        contextThreadLocal.set(browserContext);
-        needVideoThreadLocal.set(false);
-
         UiSession.set(browser, browserContext);
 
+        needVideoThreadLocal.set(false);
     }
 
     @Override
@@ -94,6 +117,7 @@ public class BrowserExtension implements BeforeEachCallback,
         var page = UiSession.page();
         if (page != null) {
             attachPng(page.screenshot());
+
         }
         needVideoThreadLocal.set(true);
         throw throwable;

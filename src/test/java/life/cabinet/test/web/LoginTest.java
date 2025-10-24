@@ -16,11 +16,29 @@ public class LoginTest {
     void homePageShouldBeDisplayedAfterSuccessLogin() {
         Pages.open(testConfig().devCabinetUrl(), LoginPage.class)
                 .checkThatPageLoaded()
-                .introduce()
+                .acknowledge()
                 .setUsername(testConfig().username())
                 .setPassword(testConfig().password())
-                .submit(new HomePage())
+                .submit(HomePage.class)
                 .checkThatPageLoaded();
     }
 
+    @Test
+    void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
+        Pages.open(testConfig().devCabinetUrl(), LoginPage.class)
+                .checkThatPageLoaded()
+                .acknowledge()
+                .fillUsernameAndPassword(testConfig().username(), "1234567")
+                .submit(LoginPage.class)
+                .checkError("Неверный пароль");
+    }
+
+    @Test
+    void badTest() {
+        Pages.open(testConfig().devCabinetUrl(), LoginPage.class)
+                .checkThatPageLoaded()
+                .fillUsernameAndPassword(testConfig().username(), "1234567")
+                .submit(LoginPage.class)
+                .checkError("Неверный пароль");
+    }
 }

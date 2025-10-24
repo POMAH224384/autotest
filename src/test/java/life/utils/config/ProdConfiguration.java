@@ -15,6 +15,9 @@ public interface ProdConfiguration extends Config {
     @Key("base.test.video.path")
     String baseTestVideoPath();
 
+    @Key("navigation.timeout")
+    Double navigationTimeout();
+
     String browser();
 
     boolean headless();

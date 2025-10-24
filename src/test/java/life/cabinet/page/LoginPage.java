@@ -5,7 +5,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import io.qameta.allure.Step;
 import life.service.web.BasePage;
-import lombok.NonNull;
+import life.utils.BasePageFactory;
 
 import javax.annotation.Nonnull;
 
@@ -17,9 +17,8 @@ public class LoginPage extends BasePage<LoginPage> {
 
     private Locator usernameInput;
     private Locator passwordInput;
-    private Locator introducedButton;
+    private Locator acknowledgeButton;
     private Locator submitButton;
-    private Locator homeHeaderImg;
     private Locator modalWindow;
     private Locator errorContainer;
     private Locator errorText;
@@ -28,10 +27,8 @@ public class LoginPage extends BasePage<LoginPage> {
     public void initComponents() {
         usernameInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("ИИН ИИН"));
         passwordInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Пароль Пароль"));
-        introducedButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Ознакомлен"));
+        acknowledgeButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Ознакомлен"));
         submitButton = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Войти"));
-        homeHeaderImg = page.locator("header")
-                .filter(new Locator.FilterOptions().setHasText("Заявить о страховом случае")).getByRole(AriaRole.IMG).first();
         modalWindow = page.locator(".confirmation-dialog__body");
         errorContainer = page.locator(".v-card");
         errorText = page.getByRole(AriaRole.DIALOG);
@@ -44,34 +41,41 @@ public class LoginPage extends BasePage<LoginPage> {
         return this;
     }
 
-    @Step("Ввести пароль: {0}")
+    @Step("Ввести пароль")
     @Nonnull
     public LoginPage setPassword(String password) {
         passwordInput.fill(password);
         return this;
     }
 
+    @Step("Заполнить логин и пароль")
+    @Nonnull
+    public LoginPage fillUsernameAndPassword(String username, String password) {
+        usernameInput.fill(username);
+        passwordInput.fill(password);
+        return this;
+    }
+
     @Step("Кликнуть на кнопку 'Ознакомлен'")
-    @NonNull
-    public LoginPage introduce() {
-        introducedButton.click();
+    @Nonnull
+    public LoginPage acknowledge() {
+        acknowledgeButton.click();
         return this;
     }
 
     @Step("Кликнуть на кнопку 'Войти'")
     @Nonnull
-    public <T extends BasePage<?>> T submit(T expectedPage) {
+    public <T extends BasePage<?>> T submit(Class<T> expectedPageClass) {
         submitButton.click();
-        expectedPage.setAndConfigurePage(page);
-        expectedPage.initComponents();
-        return expectedPage;
+        return BasePageFactory.createInstance(page, expectedPageClass);
+
     }
 
     @Step("Проверить что страница загрузилась")
     @Override
     @Nonnull
     public LoginPage checkThatPageLoaded() {
-        modalWindow.isVisible();
+        assertThat(modalWindow).isVisible();
         return this;
     }
 

@@ -7,6 +7,8 @@ import static life.utils.config.ProdConfig.prodConfig;
 
 public class BrowserManager {
     public static Browser getBrowser(final Playwright playwright) {
-        return BrowserFactory.valueOf(prodConfig().browser().toUpperCase()).createInstance(playwright);
+        String configuredBrowser = prodConfig().browser();
+        BrowserFactory browserFactory = BrowserFactory.from(configuredBrowser);
+        return browserFactory.createInstance(playwright);
     }
 }

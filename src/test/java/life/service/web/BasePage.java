@@ -11,9 +11,17 @@ public abstract class BasePage<T extends BasePage<?>> {
     public abstract T checkThatPageLoaded();
 
     public void setAndConfigurePage(final Page page) {
+        if (page == null) {
+            throw new IllegalArgumentException("Playwright page instance must not be null");
+        }
         this.page = page;
-        page.setDefaultNavigationTimeout(prodConfig().timeout());
+        page.setDefaultNavigationTimeout(prodConfig().navigationTimeout());
+        page.setDefaultTimeout(prodConfig().timeout());
     }
 
-    public void initComponents() {}
+    public abstract void initComponents();
+
+    protected Page page() {
+        return page;
+    }
 }
