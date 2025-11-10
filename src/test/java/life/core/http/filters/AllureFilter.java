@@ -1,4 +1,4 @@
-package life.service.http.filters;
+package life.core.http.filters;
 import io.qameta.allure.Allure;
 import io.qameta.allure.attachment.DefaultAttachmentProcessor;
 import io.qameta.allure.attachment.FreemarkerAttachmentRenderer;

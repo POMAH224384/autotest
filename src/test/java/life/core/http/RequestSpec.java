@@ -1,17 +1,15 @@
-package life.service.http;
+package life.core.http;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.specification.RequestSpecification;
-import life.service.http.filters.AllureFilter;
-
-import static life.utils.config.ProdConfig.prodConfig;
+import life.core.http.filters.AllureFilter;
 
 public class RequestSpec {
 
-    public static RequestSpecification json() {
+    public static RequestSpecification json(String baseUri) {
         return new RequestSpecBuilder()
-                .setBaseUri(prodConfig().apiFfinUrl())
+                .setBaseUri(baseUri)
                 .setAccept("application/json")
                 .setContentType("application/json")
                 .setRelaxedHTTPSValidation()

@@ -1,4 +1,4 @@
-package life.jupiter.extension;
+package life.core.jupiter.extension;
 
 import com.microsoft.playwright.*;
 import io.qameta.allure.Attachment;

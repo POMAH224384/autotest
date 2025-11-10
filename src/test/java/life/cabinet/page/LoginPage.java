@@ -4,7 +4,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import io.qameta.allure.Step;
-import life.service.web.BasePage;
+import life.core.web.BasePage;
 import life.utils.BasePageFactory;
 
 import javax.annotation.Nonnull;

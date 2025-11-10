@@ -2,7 +2,7 @@ package life.cabinet.page;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.options.AriaRole;
-import life.service.web.BasePage;
+import life.core.web.BasePage;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 

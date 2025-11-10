@@ -2,7 +2,7 @@ package life.ffin.page;
 
 import com.microsoft.playwright.Locator;
 import io.qameta.allure.Step;
-import life.service.web.BasePage;
+import life.core.web.BasePage;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 

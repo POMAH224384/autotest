@@ -2,7 +2,7 @@ package life.utils;
 
 import com.microsoft.playwright.Page;
 import groovy.util.logging.Slf4j;
-import life.service.web.BasePage;
+import life.core.web.BasePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

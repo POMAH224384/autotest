@@ -6,8 +6,14 @@ import org.aeonbits.owner.Config;
 @Config.Sources({"system:properties", "classpath:testConfig.properties"})
 public interface TestConfiguration extends Config {
 
-    @Key("dev.cabinet.url")
-    String devCabinetUrl();
+    @Key("cabinet.url")
+    String cabinetUrl();
+
+    @Key("api.ffin.url")
+    String apiFfinUrl();
+
+    @Key("api.superApp.url")
+    String apiSuperAppUrl();
 
     String username();
 

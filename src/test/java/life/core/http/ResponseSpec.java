@@ -1,4 +1,4 @@
-package life.service.http;
+package life.core.http;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;

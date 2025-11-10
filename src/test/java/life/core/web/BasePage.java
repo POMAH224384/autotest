@@ -1,4 +1,4 @@
-package life.service.web;
+package life.core.web;
 
 import com.microsoft.playwright.Page;
 

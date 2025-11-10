@@ -28,6 +28,16 @@ dependencies {
     testImplementation("org.aeonbits.owner:owner:1.0.12")
 
     testImplementation("com.deque.html.axe-core:playwright:4.10.2")
+
+    testImplementation("com.squareup.retrofit2:retrofit:2.11.0")
+    testImplementation("com.squareup.retrofit2:converter-jackson:2.11.0")
+    testImplementation("com.squareup.retrofit2:converter-scalars:2.11.0")
+    testImplementation("com.squareup.okhttp3:okhttp:4.11.0")
+    testImplementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    testImplementation("com.squareup.okhttp3:okhttp-urlconnection:4.11.0")
+    testImplementation("org.springframework.data:spring-data-commons:3.3.3")
+
+    testImplementation("io.qameta.allure:allure-okhttp3:2.29.1")
 }
 
 allure {

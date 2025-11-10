@@ -3,7 +3,7 @@ package life.utils;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
-import life.service.web.BasePage;
+import life.core.web.BasePage;
 
 
 
