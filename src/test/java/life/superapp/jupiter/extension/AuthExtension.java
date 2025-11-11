@@ -80,7 +80,6 @@ public class AuthExtension implements
                 .orElseThrow(() -> new ParameterResolutionException("@Auth is missing on test method/class"));
 
         if (parameterContext.isAnnotated(OneTimeToken.class)) {
-            // Берём свежий OTT из method-scope store; если по какой-то причине его нет — получаем прямо здесь
             String ott = extensionContext.getStore(NAMESPACE).get(methodOttKey(extensionContext), String.class);
             if (ott == null || ott.isBlank()) {
                 ott = getOttSafely(authAnn.iin(), authAnn.fullName());
@@ -92,7 +91,6 @@ public class AuthExtension implements
         if (parameterContext.isAnnotated(AccessToken.class)) {
             Tokens entry = extensionContext.getRoot().getStore(NAMESPACE).get(accessKey(authAnn.iin(), authAnn.fullName()), Tokens.class);
             if (entry == null || isExpired(entry)) {
-                // Перестраховка: если по TTL/очистке нет — получаем заново
                 String freshOtt = getOttSafely(authAnn.iin(), authAnn.fullName());
                 String access = getAccessSafely(freshOtt);
                 entry = new Tokens(access, Instant.now());
