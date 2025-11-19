@@ -2,9 +2,11 @@ package life.core.jupiter.extension;
 
 import com.microsoft.playwright.*;
 import io.qameta.allure.Attachment;
+import life.core.jupiter.annotation.WebTest;
 import life.utils.BrowserManager;
 import life.utils.UiSession;
 import org.junit.jupiter.api.extension.*;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -90,6 +92,22 @@ public class BrowserExtension implements BeforeEachCallback,
     @Override
     public void beforeEach(ExtensionContext extensionContext) throws Exception {
         Browser.NewContextOptions options = new Browser.NewContextOptions();
+
+        AnnotationSupport.findAnnotation(extensionContext.getRequiredTestClass(), WebTest.class)
+                .ifPresent(ann -> {
+                    if (ann.width() > 0 && ann.height() > 0) {
+                        options.setViewportSize(ann.width(), ann.height());
+                        if (ann.isMobile()) {
+                            options
+                                    .setIsMobile(true)
+                                    .setHasTouch(true)
+                                    .setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) " +
+                                            "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1");
+                        }
+                    }
+                });
+
+
         if (prodConfig().video()) {
             Path dir = Paths.get(prodConfig().baseTestVideoPath());
             try {

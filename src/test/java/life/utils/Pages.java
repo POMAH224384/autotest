@@ -1,10 +1,10 @@
 package life.utils;
 
+import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
 import life.core.web.BasePage;
-
 
 
 public final class Pages {

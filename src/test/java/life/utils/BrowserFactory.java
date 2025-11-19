@@ -5,6 +5,7 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Playwright;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static life.utils.config.ProdConfig.prodConfig;
 
@@ -34,6 +35,7 @@ public enum BrowserFactory {
     public BrowserType.LaunchOptions options() {
         return new BrowserType.LaunchOptions()
                 .setHeadless(resolveHeadless())
+                .setArgs(List.of("--ignore-certificate-errors"))
                 .setSlowMo(prodConfig().slowMotion());
     }
 

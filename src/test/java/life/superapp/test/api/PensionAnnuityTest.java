@@ -2,11 +2,11 @@ package life.superapp.test.api;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
-import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import life.core.http.ApiClient;
 import life.superapp.api.model.CalculationRequest;
 import life.superapp.api.model.OttGatewayRequest;
+import life.superapp.api.model.RegistrationRequest;
 import life.superapp.jupiter.annotation.AccessToken;
 import life.superapp.jupiter.annotation.Auth;
 import life.superapp.jupiter.annotation.OneTimeToken;
@@ -151,13 +151,13 @@ public class PensionAnnuityTest {
         Header header = new Header("X-Auth-Token", accessToken);
 
         CalculationRequest request = new CalculationRequest(
-                0,
-                0,
-                0,
-                0,
-                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                "0",
+                "0",
+                "0",
+                "0",
+                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                 "ok",
-                0
+                "0"
         );
 
         apiClient.post(baseUrl, "pension-annuity/calculation", request, header)
@@ -166,6 +166,21 @@ public class PensionAnnuityTest {
                 .body("status", is(false))
                 .body("data", notNullValue());
 
+    }
+
+    @Test
+    @Auth(iin = "700511402493", fullName = "ЖАПБАРОВА ГУЛЬМИРА АБЫЛГАЗИНОВНА")
+    @DisplayName("POST /api/pension-annuity/validation")
+    void validationTest(@AccessToken String accessToken) {
+        Header header = new Header("X-Auth-Token", accessToken);
+
+        apiClient.post(baseUrl, "pension-annuity/validation", "{}", header)
+                .statusCode(200)
+                .body("status", is(true))
+                .body("data", notNullValue())
+                .body("data.age.valid", is(true))
+                .body("data.doc.valid", is(true))
+                .body(matchesJsonSchemaInClasspath("schema/superApp/validation.json"));
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
@@ -199,21 +214,168 @@ public class PensionAnnuityTest {
                 .body(matchesJsonSchemaInClasspath("schema/superApp/calculation-error.json"));
     }
 
-    @Test
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("registrationPositiveCases")
     @Auth(iin = "700511402493", fullName = "ЖАПБАРОВА ГУЛЬМИРА АБЫЛГАЗИНОВНА")
-    @DisplayName("POST /api/pension-annuity/validation")
-    void validationTest(@AccessToken String accessToken) {
+    @DisplayName("POST /api/pension-annuity/registration")
+    void registrationTest(String caseName, RegistrationRequest request, @AccessToken String accessToken) {
         Header header = new Header("X-Auth-Token", accessToken);
 
-        apiClient.post(baseUrl, "pension-annuity/validation", "{}", header)
-                .statusCode(200)
+        apiClient.post(baseUrl, "pension-annuity/registration", request, header)
+                .statusCode(201)
+                .contentType(JSON)
                 .body("status", is(true))
                 .body("data", notNullValue())
-                .body("data.age.valid", is(true))
-                .body("data.doc.valid", is(true))
-                .body(matchesJsonSchemaInClasspath("schema/superApp/validation.json"));
+                .body(matchesJsonSchemaInClasspath("schema/superApp/registration.json"));
+
     }
 
+
+    @NotNull
+    static Stream<Object[]> registrationPositiveCases() {
+        return Stream.of(
+                new Object[] {
+                        "ОПВ = 1 000 000 000, Нет инвалидности",
+                        new RegistrationRequest(
+                                "1000000000",
+                                null,
+                                null,
+                                null,
+                                null,
+                                "OP8LBCW8N8P1U5CO",
+                                "test@test.con",
+                                new RegistrationRequest.Disability(
+                                        "0",
+                                        "2025-11-12",
+                                        null
+                                ),
+                                null,
+                                null,
+                                new RegistrationRequest.Doc(
+                                        "823091",
+                                        "passport",
+                                        "2025-10-02",
+                                        "МВД РК"
+                                )
+                        )
+                },
+                new Object[] {
+                        "ОПВ = 1 000 000 000, Гарантированный период = 10, Собственные средства = 1000, Нет инвалидности",
+                        new RegistrationRequest(
+                                "1000000000",
+                                null,
+                                "1000",
+                                "10",
+                                null,
+                                "OP8LBCW8N8P1U5CO",
+                                "test@test.con",
+                                null,
+                                new RegistrationRequest.Beneficiary(
+                                        "040910203992",
+                                        "Тест Тестович",
+                                        "+77117117111",
+                                        "m",
+                                        "2004-09-10",
+                                        "test@test.com",
+                                        "Тест, 123",
+                                        new RegistrationRequest.Doc(
+                                                "823091",
+                                                "passport",
+                                                "2025-10-02",
+                                                "МВД РК"
+                                        )
+                                ),
+                                null,
+                                new RegistrationRequest.Doc(
+                                        "823091",
+                                        "passport",
+                                        "2025-10-02",
+                                        "МВД РК"
+                                )
+                        )
+                },
+                new Object[] {
+                        "ОПВ = 1 000 000 000, ДПВ = 1 000 000, Собственные средства = 1000, Нет инвалидности",
+                        new RegistrationRequest(
+                                "1000000000",
+                                "1000000",
+                                "1000",
+                                null,
+                                null,
+                                "OP8LBCW8N8P1U5CO",
+                                "test@test.con",
+                                new RegistrationRequest.Disability(
+                                        "0",
+                                        "2025-11-12",
+                                        null
+                                ),
+                                null,
+                                null,
+                                new RegistrationRequest.Doc(
+                                        "823091",
+                                        "passport",
+                                        "2025-10-02",
+                                        "МВД РК"
+                                )
+                        )
+                },
+                new Object[] {
+                        "ОПВ = 1 000 000 000, Собственные средства = 1000, Нет инвалидности",
+                        new RegistrationRequest(
+                                "1000000000",
+                                null,
+                                "1000",
+                                null,
+                                null,
+                                "OP8LBCW8N8P1U5CO",
+                                "test@test.con",
+                                new RegistrationRequest.Disability(
+                                        "0",
+                                        "2025-11-12",
+                                        null
+                                ),
+                                null,
+                                null,
+                                new RegistrationRequest.Doc(
+                                        "823091",
+                                        "passport",
+                                        "2025-10-02",
+                                        "МВД РК"
+                                )
+                        )
+                },
+                new Object[] {
+                        "ОПВ = 1 000 000 000, Средства из другой КСЖ = 1000, Нет инвалидности",
+                        new RegistrationRequest(
+                                "1000000000",
+                                null,
+                                null,
+                                null,
+                                null,
+                                "OP8LBCW8N8P1U5CO",
+                                "test@test.con",
+                                new RegistrationRequest.Disability(
+                                        "0",
+                                        "2025-11-12",
+                                        null
+                                ),
+                                null,
+                                new RegistrationRequest.PreviousContract(
+                                        "OHS387200",
+                                        "nomad-life",
+                                        "1000000",
+                                        "2025-10-20"
+                                ),
+                                new RegistrationRequest.Doc(
+                                        "823091",
+                                        "passport",
+                                        "2025-10-02",
+                                        "МВД РК"
+                                )
+                        )
+                }
+        );
+    }
 
     @NotNull
     static Stream<Object[]> calculationPositiveCases() {
@@ -221,70 +383,70 @@ public class PensionAnnuityTest {
                 new Object[]{
                         "ОПВ = 1 000 000 000, Нет инвалидности",
                         new CalculationRequest(
-                                1_000_000_000, 0, 0, 0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "1000000000", "0", "0", "0",
+                                null,
                                 "ok",
-                                0
+                                "0"
                         )
                 },
                 new Object[]{
                         "ОПВ = 1 000 000 000, ДПВ = 100 000, Собсвтенные средства = 10 000, Средства КСЖ = 100 000,  Нет инвалидонсти",
                         new CalculationRequest(
-                                1_000_000_000,
-                                10_000,
-                                5_000,
-                                0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "1000000000",
+                                "10000",
+                                "5000",
+                                "0",
+                                null,
                                 "ok",
-                                100_000
+                                "100000"
                         )
                 },
                 new Object[]{
                         "ОПВ = 1 000 000 000, ДПВ = 100 000, Собсвтенные средства = 10 000, Средства КСЖ = 100 000,  Инвалидность 1 группы",
                         new CalculationRequest(
-                                1_000_000_000,
-                                10_000,
-                                5_000,
-                                0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "1000000000",
+                                "10000",
+                                "5000",
+                                "0",
+                                null,
                                 "disability_degree_1",
-                                100_000
+                                "100000"
                         )
                 },
                 new Object[]{
                         "ОПВ = 1 000 000 000, ДПВ = 100 000, Собсвтенные средства = 10 000, Средства КСЖ = 100 000,  Инвалидность 2 группы",
                         new CalculationRequest(
-                                1_000_000_000,
-                                10_000,
-                                5_000,
-                                0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "1000000000",
+                                "10000",
+                                "5000",
+                                "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "disability_degree_2",
-                                100_000
+                                "100000"
                         )
                 },
                 new Object[]{
                         "ОПВ = 1 000 000 000, ДПВ = 100 000, Собсвтенные средства = 10 000, Средства КСЖ = 100 000,  Инвалидность 3 группы",
                         new CalculationRequest(
-                                1_000_000_000,
-                                10_000,
-                                5_000,
-                                0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "1000000000",
+                                "10000",
+                                "5000",
+                                "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "disability_degree_3",
-                                100_000
+                                "100000"
                         )
                 },
                 new Object[]{
                         "ОПВ = 1 000 000 000, Гарантированный срок = 12, Нет инвалидности",
                         new CalculationRequest(
-                                1_000_000_000,
-                                0,
-                                0,
-                                12,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "1000000000",
+                                "0",
+                                "0",
+                                "12",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "disability_degree_3",
-                                0
+                                "0"
                         )
                 }
         );
@@ -296,60 +458,60 @@ public class PensionAnnuityTest {
                 new Object[]{
                         "Отрицательные суммы (mandatory_pension_contributions < 0)",
                         new CalculationRequest(
-                                -1, 0, 0, 0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "-1", "0", "0", "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "ok",
-                                0
+                                "0"
                         ),
                         422
                 },
                 new Object[]{
                         "Отрицательные суммы (voluntary_pension_contributions < 0)",
                         new CalculationRequest(
-                                10000000, -1, 0, 0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "10000000", "-1", "0", "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "ok",
-                                0
+                                "0"
                         ),
                         422
                 },
                 new Object[]{
                         "Отрицательные суммы (own_expenses < 0)",
                         new CalculationRequest(
-                                10000000, 0, -1, 0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "10000000", "0", "-1", "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "ok",
-                                0
+                                "0"
                         ),
                         422
                 },
                 new Object[]{
                         "Отрицательный гарантированный период (guaranteed_period_years < 0)",
                         new CalculationRequest(
-                                10000000, 0, 0, -1,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "10000000", "0", "0", "-1",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "ok",
-                                0
+                                "0"
                         ),
                         422
                 },
                 new Object[]{
                         "Отрицательные суммы (other_life_insurance_company_redemption < 0)",
                         new CalculationRequest(
-                                10000000, 0, 0, 0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "10000000", "0", "0", "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "ok",
-                                -1
+                                "-1"
                         ),
                         422
                 },
                 new Object[]{
                         "Некорректное значение disability",
                         new CalculationRequest(
-                                0, 0, 0, 0,
-                                new CalculationRequest.MandatoryProfessionalPensionContributions(0, 0),
+                                "0", "0", "0", "0",
+                                new CalculationRequest.MandatoryProfessionalPensionContributions("0", "0"),
                                 "unknown",
-                                0
+                                "0"
                         ),
                         422
                 }
