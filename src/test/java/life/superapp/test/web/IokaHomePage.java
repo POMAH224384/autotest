@@ -28,13 +28,13 @@ public class IokaHomePage extends BasePage<IokaHomePage> {
 
     }
 
-    public IokaHomePage openLogin() {
+    public <T extends BasePage<?>> T openLogin(Class<T> expectedPageClass) {
         loginButton.click();
-        return BasePageFactory.createInstance(page, IokaLoginPage.class);
+        return BasePageFactory.createInstance(page, expectedPageClass);
     }
 
-    public IokaHomePage openConnectForm() {
+    public <T extends BasePage<?>> T openConnectForm(Class<T> expectedPageClass) {
         connectButton.click();
-        return BasePageFactory.createInstance(page, IokaConnectFormPage.class);
+        return BasePageFactory.createInstance(page, expectedPageClass);
     }
 }
