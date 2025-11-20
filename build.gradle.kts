@@ -50,12 +50,45 @@ allure {
         allureJavaVersion.set("2.29.1")
         aspectjVersion.set("1.9.22.1")
     }
+
+    report {
+        reportDir.set(project.reporting.baseDirectory.dir("allure-report"))
+
+
+        singleFile.set(true)
+    }
 }
 
 
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        // ./gradlew test -PincludeTags=smoke,regression
+        if (project.hasProperty("includeTags")) {
+            val include = project.property("includeTags")
+                .toString()
+                .split(',')
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+
+            if (include.isNotEmpty()) {
+                includeTags(*include.toTypedArray())
+            }
+        }
+
+        // ./gradlew test -PexcludeTags=slow,very_slow
+        if (project.hasProperty("excludeTags")) {
+            val exclude = project.property("excludeTags")
+                .toString()
+                .split(',')
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+
+            if (exclude.isNotEmpty()) {
+                excludeTags(*exclude.toTypedArray())
+            }
+        }
+    }
 
     ignoreFailures = true
 
