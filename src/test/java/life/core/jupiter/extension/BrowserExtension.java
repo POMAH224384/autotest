@@ -16,33 +16,90 @@ import static life.utils.config.ProdConfig.prodConfig;
 
 public class BrowserExtension implements BeforeEachCallback,
         AfterEachCallback,
-        AfterAllCallback,
-        BeforeAllCallback,
         TestExecutionExceptionHandler,
         LifecycleMethodExecutionExceptionHandler {
 
-    private Playwright playwright;
-    private Browser browser;
+//    private Playwright playwright;
+//    private Browser browser;
+
+    private static final ThreadLocal<Playwright> TL_PLAYWRIGHT = new ThreadLocal<>();
+    private static final ThreadLocal<Browser> TL_BROWSER = new ThreadLocal<>();
 
     private final ThreadLocal<Boolean> needVideoThreadLocal = ThreadLocal.withInitial(() -> false);
 
-    @Override
-    public void afterAll(ExtensionContext extensionContext) {
-        if (browser != null) {
-            browser.close();
-            browser = null;
-        }
-        if (playwright != null) {
-            playwright.close();
-            playwright = null;
-        }
-    }
+
+
+//    @Override
+//    public void beforeAll(ExtensionContext extensionContext) {
+//        playwright = Playwright.create();
+//        browser = BrowserManager.getBrowser(playwright);
+//    }
 
     @Override
-    public void beforeAll(ExtensionContext extensionContext) {
-        playwright = Playwright.create();
-        browser = BrowserManager.getBrowser(playwright);
+    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+
+        Playwright playwright = TL_PLAYWRIGHT.get();
+        if (playwright == null) {
+            playwright = Playwright.create();
+            TL_PLAYWRIGHT.set(playwright);
+        }
+
+        Browser browser = TL_BROWSER.get();
+        if (browser == null) {
+            browser = BrowserManager.getBrowser(playwright);
+            TL_BROWSER.set(browser);
+        }
+
+        Browser.NewContextOptions options = new Browser.NewContextOptions();
+
+        AnnotationSupport.findAnnotation(extensionContext.getRequiredTestClass(), WebTest.class)
+                .ifPresent(ann -> {
+                    if (ann.width() > 0 && ann.height() > 0) {
+                        options.setViewportSize(ann.width(), ann.height());
+                        if (ann.isMobile()) {
+                            options
+                                    .setIsMobile(true)
+                                    .setHasTouch(true)
+                                    .setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) " +
+                                            "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1");
+                        }
+                    }
+                });
+
+
+        if (prodConfig().video()) {
+            Path dir = Paths.get(prodConfig().baseTestVideoPath());
+            try {
+                Files.createDirectories(dir);
+            } catch (Exception ignored) { }
+            options.setRecordVideoDir(dir);
+            options.setRecordVideoSize(1280, 720);
+        }
+        BrowserContext browserContext = browser.newContext(options);
+
+        browserContext.tracing().start(
+                new Tracing.StartOptions()
+                        .setScreenshots(true)
+                        .setSnapshots(true)
+                        .setSources(true)
+        );
+
+        UiSession.set(browser, browserContext);
+
+        needVideoThreadLocal.set(false);
     }
+
+//    @Override
+//    public void afterAll(ExtensionContext extensionContext) {
+//        if (browser != null) {
+//            browser.close();
+//            browser = null;
+//        }
+//        if (playwright != null) {
+//            playwright.close();
+//            playwright = null;
+//        }
+//    }
 
     @Override
     public void afterEach(ExtensionContext extensionContext) throws Exception {
@@ -89,46 +146,7 @@ public class BrowserExtension implements BeforeEachCallback,
 
     }
 
-    @Override
-    public void beforeEach(ExtensionContext extensionContext) throws Exception {
-        Browser.NewContextOptions options = new Browser.NewContextOptions();
 
-        AnnotationSupport.findAnnotation(extensionContext.getRequiredTestClass(), WebTest.class)
-                .ifPresent(ann -> {
-                    if (ann.width() > 0 && ann.height() > 0) {
-                        options.setViewportSize(ann.width(), ann.height());
-                        if (ann.isMobile()) {
-                            options
-                                    .setIsMobile(true)
-                                    .setHasTouch(true)
-                                    .setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) " +
-                                            "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1");
-                        }
-                    }
-                });
-
-
-        if (prodConfig().video()) {
-            Path dir = Paths.get(prodConfig().baseTestVideoPath());
-            try {
-                Files.createDirectories(dir);
-            } catch (Exception ignored) { }
-            options.setRecordVideoDir(dir);
-            options.setRecordVideoSize(1280, 720);
-        }
-        BrowserContext browserContext = browser.newContext(options);
-
-        browserContext.tracing().start(
-                new Tracing.StartOptions()
-                        .setScreenshots(true)
-                        .setSnapshots(true)
-                        .setSources(true)
-        );
-
-        UiSession.set(browser, browserContext);
-
-        needVideoThreadLocal.set(false);
-    }
 
     @Override
     public void handleTestExecutionException(ExtensionContext extensionContext, Throwable throwable) throws Throwable {

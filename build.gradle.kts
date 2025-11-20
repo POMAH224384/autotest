@@ -90,6 +90,8 @@ tasks.test {
         }
     }
 
+    maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
+
     ignoreFailures = true
 
     finalizedBy("allureReport")
