@@ -90,7 +90,7 @@ tasks.test {
         }
     }
 
-    maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
+//    maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
 
     ignoreFailures = true
 
