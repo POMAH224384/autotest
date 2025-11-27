@@ -6,7 +6,7 @@ import life.superapp.api.service.impl.AuthApiClient;
 import life.superapp.jupiter.annotation.AccessToken;
 import life.superapp.jupiter.annotation.Auth;
 import life.superapp.jupiter.annotation.OneTimeToken;
-import life.utils.UiSession;
+import life.core.web.UiSession;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 

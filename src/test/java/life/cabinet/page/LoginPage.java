@@ -5,7 +5,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import io.qameta.allure.Step;
 import life.core.web.BasePage;
-import life.utils.BasePageFactory;
+import life.core.web.BasePageFactory;
 
 import javax.annotation.Nonnull;
 
@@ -22,6 +22,8 @@ public class LoginPage extends BasePage<LoginPage> {
     private Locator modalWindow;
     private Locator errorContainer;
     private Locator errorText;
+    private Locator registrationButton;
+    private Locator phoneNumberInput;
 
     @Override
     public void initComponents() {
@@ -32,12 +34,28 @@ public class LoginPage extends BasePage<LoginPage> {
         modalWindow = page.locator(".confirmation-dialog__body");
         errorContainer = page.locator(".v-card");
         errorText = page.getByRole(AriaRole.DIALOG);
+        registrationButton = page.locator("button.login-button:has-text('Регистрация')");
+        phoneNumberInput = page.getByLabel("Телефон");
     }
 
     @Step("Ввести ИИН: {0}")
     @Nonnull
     public LoginPage setUsername(String username) {
         usernameInput.fill(username);
+        return this;
+    }
+
+    @Step("Кликнуть на 'Регистрация'")
+    @Nonnull
+    public LoginPage clickRegistrationButton() {
+        registrationButton.click();
+        return this;
+    }
+
+    @Step("Ввести номер телефона")
+    @Nonnull
+    public LoginPage setPhoneNumber(String phone) {
+        phoneNumberInput.fill(phone);
         return this;
     }
 
@@ -70,6 +88,7 @@ public class LoginPage extends BasePage<LoginPage> {
         return BasePageFactory.createInstance(page, expectedPageClass);
 
     }
+
 
     @Step("Проверить что страница загрузилась")
     @Override

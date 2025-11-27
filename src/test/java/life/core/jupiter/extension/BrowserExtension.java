@@ -3,8 +3,8 @@ package life.core.jupiter.extension;
 import com.microsoft.playwright.*;
 import io.qameta.allure.Attachment;
 import life.core.jupiter.annotation.WebTest;
-import life.utils.BrowserManager;
-import life.utils.UiSession;
+import life.core.web.BrowserManager;
+import life.core.web.UiSession;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 

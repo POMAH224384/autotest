@@ -1,4 +1,4 @@
-package life.utils;
+package life.core.web;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;

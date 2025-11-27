@@ -18,6 +18,9 @@ public interface TestConfiguration extends Config {
     @Key("superApp.registration.url")
     String superAppRegUrl();
 
+    @Key("ffin.url")
+    String ffinUrl();
+
     String username();
 
     String password();
