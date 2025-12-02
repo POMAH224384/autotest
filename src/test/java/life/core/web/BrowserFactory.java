@@ -3,11 +3,12 @@ package life.core.web;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Playwright;
+import life.utils.config.EnvConfig;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static life.utils.config.ProdConfig.prodConfig;
+
 
 public enum BrowserFactory {
 
@@ -36,7 +37,7 @@ public enum BrowserFactory {
         return new BrowserType.LaunchOptions()
                 .setHeadless(resolveHeadless())
                 .setArgs(List.of("--ignore-certificate-errors"))
-                .setSlowMo(prodConfig().slowMotion());
+                .setSlowMo(EnvConfig.cfg().slowMotion());
     }
 
     public abstract Browser createInstance(Playwright playwright);
@@ -50,6 +51,6 @@ public enum BrowserFactory {
 
     private static boolean resolveHeadless() {
         String overridden = System.getProperty("headless");
-        return overridden == null ? prodConfig().headless() : Boolean.parseBoolean(overridden);
+        return overridden == null ? EnvConfig.cfg().headless() : Boolean.parseBoolean(overridden);
     }
 }

@@ -1,8 +1,9 @@
 package life.core.web;
 
 import com.microsoft.playwright.Page;
+import life.utils.config.EnvConfig;
 
-import static life.utils.config.ProdConfig.prodConfig;
+
 
 public abstract class BasePage<T extends BasePage<?>> {
 
@@ -15,8 +16,8 @@ public abstract class BasePage<T extends BasePage<?>> {
             throw new IllegalArgumentException("Playwright page instance must not be null");
         }
         this.page = page;
-        page.setDefaultNavigationTimeout(prodConfig().navigationTimeout());
-        page.setDefaultTimeout(prodConfig().timeout());
+        page.setDefaultNavigationTimeout(EnvConfig.cfg().navigationTimeout());
+        page.setDefaultTimeout(EnvConfig.cfg().timeout());
     }
 
     public abstract void initComponents();

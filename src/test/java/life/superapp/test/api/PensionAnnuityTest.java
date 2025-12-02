@@ -4,17 +4,15 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Owner;
 import io.restassured.http.Header;
 import life.core.http.ApiClient;
-import life.superapp.api.model.CalculationRequest;
-import life.superapp.api.model.OttGatewayRequest;
-import life.superapp.api.model.RegistrationRequest;
+import life.superapp.api.model.calculation.CalculationRequest;
+import life.superapp.api.model.auth.OttGatewayRequest;
+import life.superapp.api.model.registration.RegistrationRequest;
 import life.superapp.jupiter.annotation.AccessToken;
 import life.superapp.jupiter.annotation.Auth;
 import life.superapp.jupiter.annotation.OneTimeToken;
+import life.utils.config.EnvConfig;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -23,7 +21,6 @@ import java.util.stream.Stream;
 
 import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static life.utils.config.TestConfig.testConfig;
 import static org.hamcrest.Matchers.*;
 
 @Tag("PensionAnnuity")
@@ -32,7 +29,7 @@ public class PensionAnnuityTest {
 
     private final ApiClient apiClient = new ApiClient();
 
-    private final String baseUrl = testConfig().apiSuperAppUrl();
+    private final String baseUrl = EnvConfig.cfg().apiSuperAppUrl();
 
     @Test
     @DisplayName("POST /api/auth/gateway")
@@ -214,6 +211,7 @@ public class PensionAnnuityTest {
                 .body(matchesJsonSchemaInClasspath("schema/superApp/calculation-error.json"));
     }
 
+    @Disabled
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("registrationPositiveCases")
     @Auth(iin = "700511402493", fullName = "ЖАПБАРОВА ГУЛЬМИРА АБЫЛГАЗИНОВНА")

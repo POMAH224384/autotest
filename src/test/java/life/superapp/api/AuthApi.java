@@ -1,9 +1,9 @@
 package life.superapp.api;
 
-import life.superapp.api.model.AuthUserRequest;
-import life.superapp.api.model.AuthUserResponse;
-import life.superapp.api.model.OttGatewayRequest;
-import life.superapp.api.model.OttGatewayResponse;
+import life.superapp.api.model.auth.AuthUserRequest;
+import life.superapp.api.model.auth.AuthUserResponse;
+import life.superapp.api.model.auth.OttGatewayRequest;
+import life.superapp.api.model.auth.OttGatewayResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;

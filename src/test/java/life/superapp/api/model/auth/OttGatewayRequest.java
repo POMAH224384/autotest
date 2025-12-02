@@ -1,4 +1,4 @@
-package life.superapp.api.model;
+package life.superapp.api.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

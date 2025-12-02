@@ -11,17 +11,17 @@ import life.superapp.jupiter.annotation.Auth;
 import life.superapp.page.CalculationPage;
 import life.superapp.page.ConfirmRegistrationPage;
 import life.superapp.page.PolicyholderDetailsPage;
+import life.utils.config.EnvConfig;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static life.utils.config.TestConfig.testConfig;
 
 @WebTest(width = 375, height = 812, isMobile = true)
-@Auth(iin = "700511402493", fullName = "ЖАПБАРОВА ГУЛЬМИРА АБЫЛГАЗИНОВНА")
+@Auth(iin = "", fullName = "")
 @Tag("PA-UI")
 public class RegistrationWebTest {
 
-    private final String regUrlPa = testConfig().superAppRegUrl();
+    private final String regUrlPa = EnvConfig.cfg().superAppRegUrl();
 
     @Test
     void annuityShouldBeVisibleOnConfirmationPage(@AccessToken String token) {

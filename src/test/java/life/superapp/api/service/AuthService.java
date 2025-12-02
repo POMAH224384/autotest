@@ -2,7 +2,7 @@ package life.superapp.api.service;
 
 import javax.annotation.Nonnull;
 
-public interface AuthClient {
+public interface AuthService {
     @Nonnull
     String getOtt(String iin, String fullName) throws Exception;
 

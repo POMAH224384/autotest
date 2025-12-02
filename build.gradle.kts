@@ -21,6 +21,8 @@ dependencies {
     testImplementation("io.rest-assured:json-path:5.4.0")
     testImplementation("io.rest-assured:json-schema-validator:5.4.0")
 
+    testImplementation("org.projectlombok:lombok:1.18.42")
+
     testImplementation("io.qameta.allure:allure-rest-assured:2.29.1")
 
     testImplementation("com.microsoft.playwright:playwright:1.50.0")
@@ -63,7 +65,7 @@ allure {
 
 tasks.test {
     useJUnitPlatform {
-        // ./gradlew test -PincludeTags=smoke,regression
+        // ./gradlew test -PincludeTags=ffin-api,PA-UI
         if (project.hasProperty("includeTags")) {
             val include = project.property("includeTags")
                 .toString()
@@ -76,7 +78,7 @@ tasks.test {
             }
         }
 
-        // ./gradlew test -PexcludeTags=slow,very_slow
+        // ./gradlew test -PexcludeTags=ffin-api,PA-UI
         if (project.hasProperty("excludeTags")) {
             val exclude = project.property("excludeTags")
                 .toString()
@@ -88,9 +90,12 @@ tasks.test {
                 excludeTags(*exclude.toTypedArray())
             }
         }
+
     }
 
 //    maxParallelForks = maxOf(1, Runtime.getRuntime().availableProcessors() / 2)
+
+    systemProperty("env", System.getProperty("env", "test"))
 
     ignoreFailures = true
 

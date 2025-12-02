@@ -2,9 +2,7 @@ package life.core.http;
 
 import io.restassured.http.Header;
 import io.restassured.response.ValidatableResponse;
-import retrofit2.http.Headers;
 
-import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 

@@ -5,6 +5,7 @@ import io.qameta.allure.Attachment;
 import life.core.jupiter.annotation.WebTest;
 import life.core.web.BrowserManager;
 import life.core.web.UiSession;
+import life.utils.config.EnvConfig;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -12,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static life.utils.config.ProdConfig.prodConfig;
 
 public class BrowserExtension implements BeforeEachCallback,
         AfterEachCallback,
@@ -67,8 +67,8 @@ public class BrowserExtension implements BeforeEachCallback,
                 });
 
 
-        if (prodConfig().video()) {
-            Path dir = Paths.get(prodConfig().baseTestVideoPath());
+        if (EnvConfig.cfg().video()) {
+            Path dir = Paths.get(EnvConfig.cfg().baseTestVideoPath());
             try {
                 Files.createDirectories(dir);
             } catch (Exception ignored) { }
@@ -135,7 +135,7 @@ public class BrowserExtension implements BeforeEachCallback,
             browserContext.close();
 
             // Приложить видео если тест упал (или был флаг из handlerа)
-            boolean shouldAttachVideo = prodConfig().video() && (failed || needVideoThreadLocal.get());
+            boolean shouldAttachVideo = EnvConfig.cfg().video() && (failed || needVideoThreadLocal.get());
             if (shouldAttachVideo && videoPath != null && Files.exists(videoPath)) {
                 attachVideo(Files.readAllBytes(videoPath));
             }

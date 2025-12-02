@@ -1,12 +1,13 @@
 package life.superapp.jupiter.extension;
 
 import com.microsoft.playwright.BrowserContext;
-import life.superapp.api.service.AuthClient;
-import life.superapp.api.service.impl.AuthApiClient;
+import life.superapp.api.service.AuthService;
+import life.superapp.api.service.impl.AuthApiService;
 import life.superapp.jupiter.annotation.AccessToken;
 import life.superapp.jupiter.annotation.Auth;
 import life.superapp.jupiter.annotation.OneTimeToken;
 import life.core.web.UiSession;
+import life.utils.config.EnvConfig;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -16,14 +17,13 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static life.utils.config.TestConfig.testConfig;
 
 public class AuthExtension implements BeforeEachCallback, ParameterResolver {
 
     private static final ExtensionContext.Namespace NS = ExtensionContext.Namespace.create(AuthExtension.class);
     private static final Duration TTL = Duration.ofMinutes(50);
 
-    private final AuthClient authClient = new AuthApiClient();
+    private final AuthService authClient = new AuthApiService();
 
     private record Tokens(String access, Instant createdAt) {}
 
@@ -114,7 +114,7 @@ public class AuthExtension implements BeforeEachCallback, ParameterResolver {
     }
 
     private String envBaseUrl() {
-        return testConfig().apiSuperAppUrl();
+        return EnvConfig.cfg().apiSuperAppUrl();
     }
 
     private String accessKey(String iin, String fullName) {

@@ -4,25 +4,27 @@ import life.cabinet.page.HomePage;
 import life.cabinet.page.LoginPage;
 import life.core.jupiter.annotation.WebTest;
 import life.core.web.Pages;
+import life.utils.config.EnvConfig;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static life.utils.config.TestConfig.testConfig;
 
 @Tag("Cabinet-UI")
 @WebTest(width = 375, height = 812, isMobile = true)
 public class LoginTest {
 
 
-    private final String authUrl = testConfig().cabinetUrl();
+    private final String authUrl = EnvConfig.cfg().cabinetUrl();
+    private final String iin = "";
+    private final String password = "";
 
     @Test
     void homePageShouldBeDisplayedAfterSuccessLogin() {
         Pages.open(authUrl, LoginPage.class)
                 .checkThatPageLoaded()
                 .acknowledge()
-                .setUsername(testConfig().username())
-                .setPassword(testConfig().password())
+                .setUsername(EnvConfig.cfg().username())
+                .setPassword(EnvConfig.cfg().password())
                 .submit(HomePage.class)
                 .checkThatPageLoaded();
     }
@@ -32,7 +34,7 @@ public class LoginTest {
         Pages.open(authUrl, LoginPage.class)
                 .checkThatPageLoaded()
                 .acknowledge()
-                .fillUsernameAndPassword(testConfig().username(), "1234567")
+                .fillUsernameAndPassword(EnvConfig.cfg().username(), "1234567")
                 .submit(LoginPage.class)
                 .checkError("Неверный пароль");
     }
