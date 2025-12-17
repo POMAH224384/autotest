@@ -11,6 +11,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static io.restassured.http.ContentType.JSON;
 
 import static org.hamcrest.Matchers.*;
@@ -29,6 +32,9 @@ public class SayakhatRegistrationTest {
     @DisplayName("POST /api/v1/products/freedom-travel/registration")
     void shouldBeStatus200FromRegistrationTest() {
 
+        String dateStart = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String dateEnd = LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         SayakhatRegistrationRequest request = SayakhatRegistrationRequest.builder()
                 .country1("374957920")
                 .fioKir("АЛЛАЯРОВ АЛИХАН")
@@ -39,8 +45,8 @@ public class SayakhatRegistrationTest {
                 .curRate("20000")
                 .dateBirth("2004-09-10")
                 .dateBirth2("2004-09-10")
-                .dateStart("2025-11-29")
-                .dateEnd("2025-12-06")
+                .dateStart(dateStart)
+                .dateEnd(dateEnd)
                 .address("Тест 123")
                 .address2("Тест 123")
                 .passportNum("N33823838")

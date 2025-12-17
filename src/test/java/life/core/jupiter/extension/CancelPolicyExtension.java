@@ -34,7 +34,7 @@ public class CancelPolicyExtension implements AfterEachCallback {
                     for (String policy : policies) {
                         try {
                             log.info("Cancelling policy [{}] after test [{}]", policy, context.getDisplayName());
-                            cancelPolicyService.cancelPolicy(policy, "Тестовый полис");
+                            cancelPolicyService.cancelPolicy(policy, "test");
                         } catch (IOException e) {
                             log.error("Failed to cancel policy [{}] after test [{}]", policy, context.getDisplayName(), e);
                         }
