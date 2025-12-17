@@ -44,6 +44,4 @@ public record SayakhatRegistrationRequest(
 
 
 ) {
-
-    @Builder public SayakhatRegistrationRequest {}
 }

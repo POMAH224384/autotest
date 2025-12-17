@@ -1,8 +1,8 @@
-package life.superapp.jupiter.extension;
+package life.core.jupiter.extension;
 
 import life.superapp.api.service.CancelPolicyService;
 import life.superapp.api.service.impl.CancelPolicyApiService;
-import life.superapp.jupiter.annotation.CancelPolicy;
+import life.core.jupiter.annotation.CancelPolicy;
 import life.utils.PoliciesRegistry;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

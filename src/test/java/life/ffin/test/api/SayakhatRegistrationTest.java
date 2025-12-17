@@ -1,14 +1,12 @@
 package life.ffin.test.api;
 
 import io.qameta.allure.Owner;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import life.core.http.ApiClient;
 import life.ffin.api.model.saykhat.SayakhatRegistrationRequest;
-import life.superapp.jupiter.annotation.CancelPolicy;
+import life.core.jupiter.annotation.CancelPolicy;
 import life.utils.PoliciesRegistry;
 import life.utils.config.EnvConfig;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

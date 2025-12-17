@@ -1,6 +1,6 @@
-package life.superapp.jupiter.annotation;
+package life.core.jupiter.annotation;
 
-import life.superapp.jupiter.extension.CancelPolicyExtension;
+import life.core.jupiter.extension.CancelPolicyExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.ElementType;
