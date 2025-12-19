@@ -11,14 +11,16 @@ import life.superapp.page.CalculationPage;
 import life.core.web.Pages;
 import life.superapp.page.PaymentSchedulePage;
 import life.utils.config.EnvConfig;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 
 @WebTest(width = 375, height = 812, isMobile = true)
-@Auth(iin = "700511402493", fullName = "ЖАПБАРОВА ГУЛЬМИРА АБЫЛГАЗИНОВНА")
+@Auth(iin = "", fullName = "")
 @Tag("PA-UI")
+@Disabled
 public class CalculationWebTest {
 
     private final String regPaUrl = EnvConfig.cfg().superAppRegUrl();

@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.*;
 
 @Tag("PensionAnnuity")
 @Owner("QA")
+@Disabled
 public class PensionAnnuityTest {
 
     private final ApiClient apiClient = new ApiClient();

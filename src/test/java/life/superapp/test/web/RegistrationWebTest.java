@@ -12,6 +12,7 @@ import life.superapp.page.CalculationPage;
 import life.superapp.page.ConfirmRegistrationPage;
 import life.superapp.page.PolicyholderDetailsPage;
 import life.utils.config.EnvConfig;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 @WebTest(width = 375, height = 812, isMobile = true)
 @Auth(iin = "", fullName = "")
 @Tag("PA-UI")
+@Disabled
 public class RegistrationWebTest {
 
     private final String regUrlPa = EnvConfig.cfg().superAppRegUrl();

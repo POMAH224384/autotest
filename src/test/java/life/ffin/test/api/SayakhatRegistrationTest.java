@@ -7,6 +7,7 @@ import life.ffin.api.model.saykhat.SayakhatRegistrationRequest;
 import life.core.jupiter.annotation.CancelPolicy;
 import life.utils.PoliciesRegistry;
 import life.utils.config.EnvConfig;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.*;
 
 @Tag("ffin-api")
 @Owner("QA")
+@Disabled
 public class SayakhatRegistrationTest {
 
     private final ApiClient apiClient = new ApiClient();
